@@ -22,15 +22,14 @@ function App() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [infoIndex, setInfoIndex] = useState(null);
   const [modalMessage, setModalMessage] = useState("");
-
-
   const [deleteIndex, setDeleteIndex] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-
   const formatTelefone = (value) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
-    return digits.replace(/^(\d{2})(\d)/, "($1) $2").replace(/(\d{5})(\d)/, "$1-$2");
+    return digits
+      .replace(/^(\d{2})(\d)/, "($1) $2")
+      .replace(/(\d{5})(\d)/, "$1-$2");
   };
 
   const formatCPF = (value) => {
@@ -41,7 +40,6 @@ function App() {
       .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
   };
 
-  // Atualiza formulário
   const handleChange = (e) => {
     const { name, value } = e.target;
     let newValue = value;
@@ -56,15 +54,26 @@ function App() {
 
   const validarForm = (currentForm) => {
     const newErros = {};
-    if (!currentForm.nome) newErros.nome = "Nome é obrigatório";
-    if (currentForm.telefone.replace(/\D/g, "").length < 10) newErros.telefone = "Telefone inválido";
-    if (currentForm.cpf.replace(/\D/g, "").length !== 11) newErros.cpf = "CPF inválido";
-    if (!/\S+@\S+\.\S+/.test(currentForm.email)) newErros.email = "Email inválido";
-    if (!currentForm.confirmarEmail) newErros.confirmarEmail = "Confirme seu email";
-    if (currentForm.email !== currentForm.confirmarEmail) newErros.confirmarEmail = "Emails não coincidem";
-    if (!currentForm.senha) newErros.senha = "Insira uma senha";
-    if (!currentForm.confirmarSenha) newErros.confirmarSenha = "Confirme sua senha";
-    if (currentForm.senha && currentForm.confirmarSenha && currentForm.senha !== currentForm.confirmarSenha)
+    if (currentForm.nome.length < 4) newErros.nome = "Mínimo 4 Caracteres";
+    if (currentForm.telefone.replace(/\D/g, "").length < 10)
+      newErros.telefone = "Mínimo 12 caracteres";
+    if (currentForm.cpf.replace(/\D/g, "").length !== 11)
+      newErros.cpf = "Mínimo 11 caracteres";
+    if (!/\S+@\S+\.\S+/.test(currentForm.email))
+      newErros.email = "Email inválido";
+    if (!currentForm.confirmarEmail)
+      newErros.confirmarEmail = "Confirme seu email";
+    if (currentForm.email !== currentForm.confirmarEmail)
+      newErros.confirmarEmail = "Emails não coincidem";
+    if (currentForm.senha.length < 6)
+      newErros.senha = "Mínimo 6 caracteres";
+    if (!currentForm.confirmarSenha)
+      newErros.confirmarSenha = "Confirme sua senha";
+    if (
+      currentForm.senha &&
+      currentForm.confirmarSenha &&
+      currentForm.senha !== currentForm.confirmarSenha
+    )
       newErros.confirmarSenha = "Senhas não coincidem";
 
     setErros(newErros);
@@ -117,6 +126,13 @@ function App() {
     if (deleteIndex !== null) {
       const updated = moradores.filter((_, i) => i !== deleteIndex);
       setMoradores(updated);
+
+      // 🔹 Corrige bug da tela branca
+      if (infoIndex === deleteIndex) {
+        setInfoIndex(null);
+      } else if (infoIndex > deleteIndex) {
+        setInfoIndex(infoIndex - 1);
+      }
     }
     setDeleteIndex(null);
     setShowDeleteModal(false);
@@ -128,9 +144,8 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Mostrar informações
   const handleInfo = (index) => {
-    setInfoIndex(index === infoIndex ? null : index); // Alterna
+    setInfoIndex(index === infoIndex ? null : index);
   };
 
   return (
@@ -140,8 +155,8 @@ function App() {
         <div className="col-md-6 d-flex flex-column justify-content-center align-items-center bg-primary text-white p-5">
           <h1 className="display-4 fw-bold mb-4">Condomínio Vida Feliz</h1>
           <p className="lead">
-            Bem-vindo ao sistema de cadastramento de moradores.
-            Facilite sua gestão com praticidade e segurança.
+            Bem-vindo ao sistema de cadastramento de moradores. Facilite sua
+            gestão com praticidade e segurança.
           </p>
           <img
             src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
@@ -239,7 +254,13 @@ function App() {
                 {!erros.senha && (
                   <span
                     onClick={() => setShowSenha(!showSenha)}
-                    style={{ position: "absolute", right: "15px", top: "70%", transform: "translateY(-50%)", cursor: "pointer" }}
+                    style={{
+                      position: "absolute",
+                      right: "15px",
+                      top: "70%",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                    }}
                   >
                     {showSenha ? "👁️" : "🔒"}
                   </span>
@@ -261,7 +282,13 @@ function App() {
                 {!erros.confirmarSenha && (
                   <span
                     onClick={() => setShowConfirmarSenha(!showConfirmarSenha)}
-                    style={{ position: "absolute", right: "15px", top: "70%", transform: "translateY(-50%)", cursor: "pointer" }}
+                    style={{
+                      position: "absolute",
+                      right: "15px",
+                      top: "70%",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                    }}
                   >
                     {showConfirmarSenha ? "👁️" : "🔒"}
                   </span>
@@ -270,15 +297,27 @@ function App() {
               </div>
 
               {/* Botão */}
-              <button type="submit" className="btn btn-primary w-100" disabled={loading}>
-                {loading ? <span className="spinner-border spinner-border-sm"></span> : editingIndex !== null ? "Atualizar" : "Cadastrar"}
+              <button
+                type="submit"
+                className="btn btn-primary w-100"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="spinner-border spinner-border-sm"></span>
+                ) : editingIndex !== null ? (
+                  "Atualizar"
+                ) : (
+                  "Cadastrar"
+                )}
               </button>
             </form>
           </div>
 
           {/* Lista de moradores */}
           <div className="card shadow-lg p-4 w-100 mt-5">
-            <h3 className="mb-4 text-center text-primary">Moradores Cadastrados</h3>
+            <h3 className="mb-4 text-center text-primary">
+              Moradores Cadastrados
+            </h3>
             {moradores.length === 0 ? (
               <p className="text-center">Nenhum morador cadastrado.</p>
             ) : (
@@ -298,9 +337,24 @@ function App() {
                       <td>{morador.telefone}</td>
                       <td>{morador.cpf}</td>
                       <td>
-                        <button className="btn btn-info btn-sm me-2" onClick={() => handleInfo(index)}>Info</button>
-                        <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(index)}>Editar</button>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(index)}>Excluir</button>
+                        <button
+                          className="btn btn-info btn-sm me-2"
+                          onClick={() => handleInfo(index)}
+                        >
+                          Info
+                        </button>
+                        <button
+                          className="btn btn-warning btn-sm me-2"
+                          onClick={() => handleEdit(index)}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDeleteClick(index)}
+                        >
+                          Excluir
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -309,12 +363,18 @@ function App() {
             )}
 
             {/* Informações detalhadas */}
-            {infoIndex !== null && (
+            {infoIndex !== null && moradores[infoIndex] && (
               <div className="alert alert-secondary mt-3">
                 <h5>Informações de {moradores[infoIndex].nome}:</h5>
-                <p><strong>Telefone:</strong> {moradores[infoIndex].telefone}</p>
-                <p><strong>CPF:</strong> {moradores[infoIndex].cpf}</p>
-                <p><strong>Email:</strong> {moradores[infoIndex].email}</p>
+                <p>
+                  <strong>Telefone:</strong> {moradores[infoIndex].telefone}
+                </p>
+                <p>
+                  <strong>CPF:</strong> {moradores[infoIndex].cpf}
+                </p>
+                <p>
+                  <strong>Email:</strong> {moradores[infoIndex].email}
+                </p>
               </div>
             )}
           </div>
@@ -323,18 +383,29 @@ function App() {
 
       {/* Modal de Sucesso */}
       {showModal && (
-        <div className="modal fade show" style={{ display: "block", background: "rgba(0,0,0,0.5)" }}>
+        <div
+          className="modal fade show"
+          style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+        >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header bg-success text-white">
                 <h5 className="modal-title">Sucesso!</h5>
-                <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                ></button>
               </div>
               <div className="modal-body">
                 <p>{modalMessage}</p>
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-success" onClick={() => setShowModal(false)}>
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  onClick={() => setShowModal(false)}
+                >
                   Ok
                 </button>
               </div>
@@ -345,21 +416,36 @@ function App() {
 
       {/* Modal de Confirmação de Exclusão */}
       {showDeleteModal && (
-        <div className="modal fade show" style={{ display: "block", background: "rgba(0,0,0,0.5)" }}>
+        <div
+          className="modal fade show"
+          style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+        >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header bg-danger text-white">
                 <h5 className="modal-title">Confirmar Exclusão</h5>
-                <button type="button" className="btn-close" onClick={() => setShowDeleteModal(false)}></button>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowDeleteModal(false)}
+                ></button>
               </div>
               <div className="modal-body">
                 <p>Tem certeza que deseja excluir este morador?</p>
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowDeleteModal(false)}
+                >
                   Cancelar
                 </button>
-                <button type="button" className="btn btn-danger" onClick={confirmDelete}>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={confirmDelete}
+                >
                   Confirmar
                 </button>
               </div>
